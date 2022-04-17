@@ -7,6 +7,12 @@ const {
   generateMessage,
   generateLocationMessage,
 } = require("./utils/messages");
+const {
+  addUser,
+  removeUser,
+  getUser,
+  getUsersInRoom,
+} = require("./utils/users");
 
 const app = express();
 const server = http.createServer(app);
@@ -21,19 +27,30 @@ app.use(express.static(publicDirectoryPath));
 io.on("connection", (socket) => {
   console.log("New WebSocket connection.");
 
-  socket.on("join", ({ username, room }) => {
-    // only emit events to a specific room
-    socket.join(room);
+  socket.on("join", ({ username, room }, callback) => {
+    const { error, user } = addUser({ id: socket.id, username, room });
 
-    socket.emit("message", generateMessage("Welcome!"));
+    if (error) return callback(error);
+
+    // only emit events to a specific room
+    socket.join(user.room);
+
+    socket.emit("message", generateMessage("Admin", "Welcome!"));
 
     // sends to everyone in room except sender
     socket.broadcast
-      .to(room)
-      .emit("message", generateMessage(`${username} has joined!`));
+      .to(user.room)
+      .emit(
+        "message",
+        generateMessage("Admin", `${user.username} has joined!`)
+      );
+
+    callback();
   });
 
   socket.on("sendMessage", (messageCallback, callback) => {
+    const user = getUser(socket.id);
+
     const filter = new Filter();
 
     if (filter.isProfane(messageCallback)) {
@@ -42,15 +59,20 @@ io.on("connection", (socket) => {
     // emits to a single connection
     //socket.emit("sendMessage", messageCallback);
 
-    // emits to all connections
-    io.to("Deventer").emit("message", generateMessage(messageCallback));
+    // emits to all connections in room
+    io.to(user.room).emit(
+      "message",
+      generateMessage(user.username, messageCallback)
+    );
     callback();
   });
 
   socket.on("sendLocation", (coordinatesCallback, callback) => {
-    io.emit(
+    const user = getUser(socket.id);
+    io.to(user.room).emit(
       "locationMessage",
       generateLocationMessage(
+        user.username,
         `https://google.com/maps?q=${coordinatesCallback.latitude},${coordinatesCallback.longitude}`
       )
     );
@@ -59,7 +81,13 @@ io.on("connection", (socket) => {
 
   // whenever a client disconnects
   socket.on("disconnect", () => {
-    io.emit("message", generateMessage("A user has left."));
+    const user = removeUser(socket.id);
+
+    if (user)
+      io.to(user.room).emit(
+        "message",
+        generateMessage("Admin", `${user.username} has left.`)
+      );
   });
 });
 

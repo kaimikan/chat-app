@@ -28,16 +28,19 @@ const removeUser = (id) => {
 };
 
 const getUser = (id) => {
-  const user = users.find((user) => user.id === id);
+  return users.find((user) => user.id === id);
+  /* const user = users.find((user) => user.id === id);
   if (user) return user;
-  return { error: "User not found" };
+  return { error: "User not found" }; */
 };
 
 const getUsersInRoom = (roomName) => {
   roomName = roomName.trim().toLowerCase();
-  const usersInRoom = users.filter((user) => user.room === roomName);
+  return users.filter((user) => user.room === roomName);
+
+  /* const usersInRoom = users.filter((user) => user.room === roomName);
   if (usersInRoom) return usersInRoom;
-  return { error: "No users found in that room" };
+  return { error: "No users found in that room" }; */
 };
 
 module.exports = {
