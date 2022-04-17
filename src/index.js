@@ -21,10 +21,17 @@ app.use(express.static(publicDirectoryPath));
 io.on("connection", (socket) => {
   console.log("New WebSocket connection.");
 
-  socket.emit("message", generateMessage("Welcome!"));
+  socket.on("join", ({ username, room }) => {
+    // only emit events to a specific room
+    socket.join(room);
 
-  // sends to everyone except sender
-  socket.broadcast.emit("message", generateMessage("A new user has joined!"));
+    socket.emit("message", generateMessage("Welcome!"));
+
+    // sends to everyone in room except sender
+    socket.broadcast
+      .to(room)
+      .emit("message", generateMessage(`${username} has joined!`));
+  });
 
   socket.on("sendMessage", (messageCallback, callback) => {
     const filter = new Filter();
@@ -36,7 +43,7 @@ io.on("connection", (socket) => {
     //socket.emit("sendMessage", messageCallback);
 
     // emits to all connections
-    io.emit("message", generateMessage(messageCallback));
+    io.to("Deventer").emit("message", generateMessage(messageCallback));
     callback();
   });
 
