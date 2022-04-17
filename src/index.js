@@ -31,6 +31,13 @@ io.on("connection", (socket) => {
     io.emit("message", messageCallback);
   });
 
+  socket.on("sendLocation", (coordinatesCallback) => {
+    io.emit(
+      "message",
+      `https://google.com/maps?q=${coordinatesCallback.latitude},${coordinatesCallback.longitude}`
+    );
+  });
+
   // whenever a client disconnects
   socket.on("disconnect", () => {
     io.emit("message", "A user has left.");
