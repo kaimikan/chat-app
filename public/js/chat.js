@@ -15,7 +15,7 @@ const sidebarTemplate = document.querySelector("#sidebar-template").innerHTML;
 
 // Options
 //location.search provides url ?key=value query parameters
-const { username, room } = Qs.parse(location.search, {
+const { username, creator, room } = Qs.parse(location.search, {
   ignoreQueryPrefix: true,
 });
 
@@ -117,7 +117,7 @@ $sendLocationButton.addEventListener("click", () => {
   });
 });
 
-socket.emit("join", { username, room }, (error) => {
+socket.emit("join", { username, creator, room }, (error) => {
   if (error) {
     alert(error);
     location.href = "/";

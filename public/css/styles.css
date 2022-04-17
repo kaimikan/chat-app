@@ -72,6 +72,7 @@ button:disabled {
   background: #f7f7fa;
   padding: 24px;
   width: 250px;
+  margin: 30px;
 }
 
 .centered-form button {
@@ -81,6 +82,35 @@ button:disabled {
 .centered-form input {
   margin-bottom: 16px;
   width: 100%;
+}
+
+/* Current Rooms Styles */
+
+.rooms-list {
+  list-style-type: none;
+}
+
+.rooms-list li {
+  margin-bottom: 5px;
+}
+
+.rooms-list li input {
+  color: #6b47b8;
+  background-color: #f7f7fa;
+  border-color: #6b47b8;
+  border: solid;
+  border-width: 2px;
+  border-radius: 50px;
+}
+
+.rooms-list li input:hover {
+  color: #f7f7fa;
+  background-color: #6b47b8;
+  border-color: #6b47b8;
+  border: solid;
+  border-width: 2px;
+  border-radius: 50px;
+  transition: 0.3s;
 }
 
 /* Chat Page Layout */

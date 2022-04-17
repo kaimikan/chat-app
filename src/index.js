@@ -13,6 +13,7 @@ const {
   getUser,
   getUsersInRoom,
 } = require("./utils/users");
+const { addRoom, recountRoom, generateRooms } = require("./utils/rooms");
 
 const app = express();
 const server = http.createServer(app);
@@ -27,8 +28,10 @@ app.use(express.static(publicDirectoryPath));
 io.on("connection", (socket) => {
   console.log("New WebSocket connection.");
 
-  socket.on("join", ({ username, room }, callback) => {
-    const { error, user } = addUser({ id: socket.id, username, room });
+  io.emit("currentRooms", generateRooms());
+
+  socket.on("join", ({ username, creator, room }, callback) => {
+    const { error, user } = addUser({ id: socket.id, username, creator, room });
 
     if (error) return callback(error);
 
@@ -49,6 +52,7 @@ io.on("connection", (socket) => {
       room: user.room,
       users: getUsersInRoom(user.room),
     });
+    io.emit("currentRooms", addRoom({ room }));
 
     callback();
   });
@@ -89,6 +93,7 @@ io.on("connection", (socket) => {
     const user = removeUser(socket.id);
 
     if (user) {
+      io.emit("currentRooms", recountRoom(user.room));
       io.to(user.room).emit(
         "message",
         generateMessage("Admin", `${user.username} has left.`)
