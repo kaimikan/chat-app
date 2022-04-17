@@ -15,7 +15,8 @@ const locationTemplate = document.querySelector("#location-template").innerHTML;
 socket.on("message", (messageCallback) => {
   console.log(messageCallback);
   const html = Mustache.render(messageTemplate, {
-    message: messageCallback,
+    message: messageCallback.text,
+    createdAt: moment(messageCallback.createdAt).format("HH:mm"),
   });
   $messages.insertAdjacentHTML("beforeend", html);
 });
@@ -23,7 +24,8 @@ socket.on("message", (messageCallback) => {
 socket.on("locationMessage", (urlCallback) => {
   console.log(urlCallback);
   const html = Mustache.render(locationTemplate, {
-    url: urlCallback,
+    url: urlCallback.url,
+    createdAt: moment(urlCallback.createdAt).format("HH:mm"),
   });
   $messages.insertAdjacentHTML("beforeend", html);
 });
