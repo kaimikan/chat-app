@@ -2,6 +2,7 @@ const path = require("path");
 const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
+const Filter = require("bad-words");
 
 const app = express();
 const server = http.createServer(app);
@@ -23,19 +24,26 @@ io.on("connection", (socket) => {
   // sends to everyone except sender
   socket.broadcast.emit("message", "A new user has joined!");
 
-  socket.on("sendMessage", (messageCallback) => {
+  socket.on("sendMessage", (messageCallback, callback) => {
+    const filter = new Filter();
+
+    if (filter.isProfane(messageCallback)) {
+      return callback("Profanity is not allowed!");
+    }
     // emits to a single connection
     //socket.emit("sendMessage", messageCallback);
 
     // emits to all connections
     io.emit("message", messageCallback);
+    callback();
   });
 
-  socket.on("sendLocation", (coordinatesCallback) => {
+  socket.on("sendLocation", (coordinatesCallback, callback) => {
     io.emit(
       "message",
       `https://google.com/maps?q=${coordinatesCallback.latitude},${coordinatesCallback.longitude}`
     );
+    callback();
   });
 
   // whenever a client disconnects
