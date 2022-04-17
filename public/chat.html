@@ -3,7 +3,7 @@
   <head>
     <title>Chat App</title>
     <link rel="icon" href="/img/favicon.png" />
-    <link rel="stylesheet" href="/css/styles.min.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
   </head>
   <body>
     <div class="chat">
@@ -29,24 +29,34 @@
     </div>
 
     <script id="message-template" type="text/html">
-      <div class="message">
-        <p>
-          <span class="message__name">{{username}}</span>
-          <span class="message__meta">{{createdAt}}</span>
-        </p>
-        <p>{{message}}</p>
+      {{#isCurrentChatter}}
+      <div class="message personal">
+        {{/isCurrentChatter}}{{^isCurrentChatter}}
+        <div class="message">
+          {{/isCurrentChatter}}
+          <p>
+            <span class="message__name">{{username}}</span>
+            <span class="message__meta">{{createdAt}}</span>
+          </p>
+          <p>{{message}}</p>
+        </div>
       </div>
     </script>
 
     <script id="location-template" type="text/html">
-      <div class="message">
-        <p>
-          <span class="message__name">{{username}}</span>
-          <span class="message__meta">{{createdAt}}</span>
-        </p>
-        <p>
-          <a href="{{url}}" target="_blank">location link</a>
-        </p>
+      {{#isCurrentChatter}}
+      <div class="message personal">
+        {{/isCurrentChatter}}{{^isCurrentChatter}}
+        <div class="message">
+          {{/isCurrentChatter}}
+          <p>
+            <span class="message__name">{{username}}</span>
+            <span class="message__meta">{{createdAt}}</span>
+          </p>
+          <p>
+            <a href="{{url}}" target="_blank">location link</a>
+          </p>
+        </div>
       </div>
     </script>
 
@@ -55,7 +65,7 @@
       <h3 class="list-title">Users</h3>
       <ul class="users">
         {{#users}}
-        <li>{{username}}</li>
+        <li>{{{username}}}</li>
         {{/users}}
       </ul>
     </script>

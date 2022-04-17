@@ -47,6 +47,8 @@ socket.on("message", (messageCallback) => {
   const html = Mustache.render(messageTemplate, {
     username: messageCallback.username,
     message: messageCallback.text,
+    isCurrentChatter:
+      username.trim().toLowerCase() === messageCallback.username,
     createdAt: moment(messageCallback.createdAt).format("HH:mm"),
   });
   $messages.insertAdjacentHTML("beforeend", html);
@@ -58,6 +60,7 @@ socket.on("locationMessage", (urlCallback) => {
   const html = Mustache.render(locationTemplate, {
     username: urlCallback.username,
     url: urlCallback.url,
+    isCurrentChatter: username.trim().toLowerCase() === urlCallback.username,
     createdAt: moment(urlCallback.createdAt).format("HH:mm"),
   });
   $messages.insertAdjacentHTML("beforeend", html);
@@ -65,6 +68,11 @@ socket.on("locationMessage", (urlCallback) => {
 });
 
 socket.on("roomData", ({ room, users }) => {
+  // adding a b tag to current chatter so we can display it in the list
+  const index = users.findIndex(
+    (user) => user.username === username.trim().toLowerCase()
+  );
+  users[index].username = `<b>${username.trim().toLowerCase()}</b>`;
   const html = Mustache.render(sidebarTemplate, {
     room,
     users,
